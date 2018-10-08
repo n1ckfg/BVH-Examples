@@ -3,7 +3,7 @@
 var canvas, bvh, easycam;
 
 function preload() {
-    bvh = new BVHLoader("./files/pirouette.bvh");
+    bvh = new BVHLoader("./files/brekel.bvh");
 }
 
 function setup() {
@@ -12,7 +12,7 @@ function setup() {
   setAttributes('antialias', true);
 
   easycam = createEasyCam();
-  bvh.parse();
+  bvh.setup();
 } 
 
 function draw(){
