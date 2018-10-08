@@ -11,10 +11,12 @@ class BVHLoader {
 	constructor(filepath) {
 		this.lines = loadStrings(filepath);
 		this.bones;
+		this.frameCount = 0;
 	}
 
 	setup() {
 		this.bones = this.readBvh(this.lines);
+		this.frameCount = this.bones[0].frames.length;
 		console.log(this.bones);
 	}
 
