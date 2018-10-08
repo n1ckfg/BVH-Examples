@@ -35,6 +35,7 @@ function draw(){
 			var frame = bone.frames[counter];
 			var position = frame.position;
 			lastTime = frame.time;
+			
 			push();
 			translate(position.x, position.y, position.z);
 			box(1);
