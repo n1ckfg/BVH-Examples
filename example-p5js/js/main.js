@@ -34,10 +34,11 @@ function draw(){
 			var bone = bvh.bones[i];
 			var frame = bone.frames[counter];
 			var position = frame.position;
+			var rotation = frame.rotation;
 			lastTime = frame.time;
 			
 			push();
-			translate(position.x, position.y, position.z);
+			translate(position.x + bone.offset.x, position.y + bone.offset.y, position.z + bone.offset.z);
 			box(1);
 			pop();
 		} catch (err) { } 
