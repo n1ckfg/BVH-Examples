@@ -4,7 +4,7 @@ var canvas, easycam, counter, fps;
 var bvh, skeleton;
 
 function preload() {
-    bvh = new BVHLoader("./files/Jackson.bvh");
+    bvh = new BVHLoader("./files/pirouette.bvh");
 }
 
 function setup() {
@@ -31,16 +31,19 @@ function draw(){
 	var lastTime = 0;
 
 	for (var i=0; i<skeleton.limbs.length; i++) {
-			var bone = skeleton.limbs[i];
+		var limb = skeleton.limbs[i];
+		for (var j=0; j<limb.bones.length; j++) {
+			var bone = limb.bones[j];
 			var frame = bone.frames[counter];
 			var position = frame.position;
 			var rotation = frame.rotation;
 			lastTime = frame.time;
-			
-			push();
+		
+			if (j === 0) push();
 			translate(position.x + bone.offset.x, position.y + bone.offset.y, position.z + bone.offset.z);
 			box(1);
-			pop();
+			if (j === limb.bones.length - 1) pop();
+		}
 	}
 
 	if (time > lastTime + fps) {
