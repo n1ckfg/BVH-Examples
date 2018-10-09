@@ -1,6 +1,7 @@
 "use strict";
 
-var canvas, bvh, easycam, counter, fps;
+var canvas, easycam, counter, fps;
+var bvh, skeleton;
 
 function preload() {
     bvh = new BVHLoader("./files/Jackson.bvh");
@@ -12,7 +13,7 @@ function setup() {
   setAttributes('antialias', true);
 
   easycam = createEasyCam();
-  bvh.setup();
+  skeleton = new Skeleton(bvh);
   counter = 0;
   fps = 1.0 / 30.0;
 } 
@@ -29,9 +30,8 @@ function draw(){
 	var time = parseFloat(millis()) / 1000.0;
 	var lastTime = 0;
 
-	for (var i=0; i<bvh.bones.length; i++) {
-		try {
-			var bone = bvh.bones[i];
+	for (var i=0; i<skeleton.limbs.length; i++) {
+			var bone = skeleton.limbs[i];
 			var frame = bone.frames[counter];
 			var position = frame.position;
 			var rotation = frame.rotation;
@@ -41,11 +41,10 @@ function draw(){
 			translate(position.x + bone.offset.x, position.y + bone.offset.y, position.z + bone.offset.z);
 			box(1);
 			pop();
-		} catch (err) { } 
 	}
 
 	if (time > lastTime + fps) {
-		if (counter < bvh.frameCount) {
+		if (counter < skeleton.frameCount - 1) {
 			counter ++;
 		} else {
 			counter = 0;

@@ -11,13 +11,12 @@ class BVHLoader {
 	constructor(filepath) {
 		this.lines = loadStrings(filepath);
 		this.bones;
-		this.frameCount = 0;
 	}
 
-	setup() {
+	parse() {
 		this.bones = this.readBvh(this.lines);
-		this.frameCount = this.bones[0].frames.length;
 		console.log(this.bones);
+		return this;
 	}
 
 	nextLine(lines) {
@@ -432,6 +431,37 @@ class Quaternion {
 		this._order = order;
 
 		return createVector(this._x, this._y, this._z);
+	}
+
+}
+
+class Skeleton {
+
+	constructor(bvh) {
+		this.bvh = bvh.parse();
+		this.frameCount = 0;
+		this.bones = [];
+		this.limbs = [];
+		this.setup();
+
+		console.log("all bones: " + this.bvh.bones.length + "   usable bones: " + this.bones.length + "   limbs: " + this.limbs.length + "   frames: " + this.frameCount);
+	}
+
+	setup() {
+		for (var i=0; i<this.bvh.bones.length; i++) {
+			try {
+				var bone = this.bvh.bones[i];
+				if (bone.frames[0].position !== undefined || bone.frames[0].rotation !== undefined) {
+					this.bones.push(bone);
+				}
+			} catch (err) { } 
+		}	
+
+		this.frameCount = this.bones[0].frames.length;
+
+		for (var i=0; i<this.bones.length; i++) {
+			this.limbs.push(this.bones[i]);
+		}	
 	}
 
 }
