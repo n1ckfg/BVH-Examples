@@ -442,8 +442,16 @@ class Skeleton {
 		this.bvh = bvh.parse();
 		this.frameCount = 0;
 		this.bones = [];
-		this.limbs = [];
 		this.setup();
+	}
+
+	getBone(name) {
+		for (var i=0; i<this.bones.length; i++) {
+			if (name === this.bones[i].name) {
+				return this.bones[i];
+			}
+		}
+		return undefined;
 	}
 
 	setup() {
@@ -457,16 +465,6 @@ class Skeleton {
 			}
 		}
 
-		function boneIsUsed(name) {
-			for (var i=0; i<usedBoneNames.length; i++) {
-				if (name === usedBoneNames[i]) return true;
-			}
-			return false;
-		}
-
-		var usedBoneNames = [];
-
-		// 1. check all bones for valid keyframe info
 		for (var i=0; i<this.bvh.bones.length; i++) {
 			try {
 				var bone = this.bvh.bones[i];
@@ -478,53 +476,8 @@ class Skeleton {
 
 		this.frameCount = this.bones[0].frames.length;
 
-		// 2. group bones into limbs
-		for (var i=0; i<this.bones.length; i++) {
-			var bone = this.bones[i];
-			if (!boneIsUsed(bone.name)) {
-				var tempLimb = new Limb(bone.name);
-				tempLimb.bones.push(bone);
-				usedBoneNames.push(bone.name);
-				for (var j=0; j<bone.children.length; j++) {
-					var childBone = bone.children[j];
-					tempLimb.bones.push(childBone);
-					usedBoneNames.push(childBone.name);
-				}
-				this.limbs.push(tempLimb);
-			}
-		}	
-
-		// 3. Clean invalid bones again.
-		for (var i=0; i<this.limbs.length; i++) {		
-			var limb = this.limbs[i];
-			for (var j=0; j<limb.bones.length; j++) {
-				if (limb.bones[j].name === "ENDSITE") {
-					limb.bones.splice(j, 1);
-				}
-			}
-		}
-
-		// 4. Debug list of limb and bone names.
-		for (var i=0; i<this.limbs.length; i++) {		
-			var limb = this.limbs[i];
-			var allNames = "";
-			for (var j=0; j<limb.bones.length; j++) {
-				allNames += limb.bones[j].name;
-				if (j < limb.bones.length-1) allNames += ", ";
-			}
-			console.log("limb: " + limb.name + "   bones: " + limb.bones.length + "   [ " + allNames + " ]");
-		}
 		console.log("____________________________________");
-		console.log("all bones: " + this.bvh.bones.length + "   usable bones: " + this.bones.length + "   limbs: " + this.limbs.length + "   frames: " + this.frameCount);
-	}
-
-}
-
-class Limb {
-
-	constructor(name) {
-		this.name = name;
-		this.bones = [];
+		console.log("all bones: " + this.bvh.bones.length + "   usable bones: " + this.bones.length + "   frames: " + this.frameCount);
 	}
 
 }

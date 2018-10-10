@@ -3,9 +3,12 @@
 var canvas, easycam, counter, fps;
 var bvh, skeleton;
 var rotOffset;
+var lastTime = 0;
 
 function preload() {
     bvh = new BVHLoader("./files/Brekel_03_11_2016_15_47_42_body1.bvh");
+    //bvh = new BVHLoader("./files/Jackson.bvh");
+    //bvh = new BVHLoader("./files/pirouette.bvh");
 }
 
 function setup() {
@@ -34,38 +37,10 @@ function draw(){
 	strokeWeight(1);
 
 	var time = parseFloat(millis()) / 1000.0;
-	var lastTime = 0;
 
-	for (var i=0; i<skeleton.limbs.length; i++) {
-		var limb = skeleton.limbs[i];
-		for (var j=0; j<limb.bones.length; j++) {
-			var bone = limb.bones[j];
-			var frame = bone.frames[counter];
-			var position = frame.position;
-			var rotation = frame.rotation.toEuler();
-			lastTime = frame.time;
-		
-			if (j === 0) push();
-			translate(position.x + bone.offset.x, position.y + bone.offset.y, position.z + bone.offset.z);
-			rotate3D(rotation);
-			if (bone.name === "Head") {
-				fill(10, 64, 255);
-				box(4);
-			} else if (bone.name === "Hips") {
-				fill(255);
-				box(4);
-			} else if (bone.name === "LeftHand") {
-				fill(10, 255, 64);
-				box(4);
-			} else if (bone.name === "RightHand") {
-				fill(255, 64, 10);
-				box(4);
-			} else {
-				fill(155);
-				box(2);
-			}
-			if (j === limb.bones.length - 1) pop();
-		}
+	for (var i=0; i<skeleton.bones.length; i++) {
+		var bone = skeleton.bones[i];
+		drawBone(bone);
 	}
 
 	if (time > lastTime + fps) {
@@ -75,6 +50,34 @@ function draw(){
 			counter = 0;
 		}
 	}
+}
+
+function drawBone(bone) {
+	var frame = bone.frames[counter];
+	lastTime = frame.time;
+	var position = frame.position;
+	var rotation = frame.rotation.toEuler();
+	
+	push();
+	translate(position.x + bone.offset.x, position.y + bone.offset.y, position.z + bone.offset.z);
+	rotate3D(rotation);
+	if (bone.name === "Head") {
+		fill(10, 64, 255);
+		box(4);
+	} else if (bone.name === "Hips") {
+		fill(255);
+		box(4);
+	} else if (bone.name === "LeftHand") {
+		fill(10, 255, 64);
+		box(4);
+	} else if (bone.name === "RightHand") {
+		fill(255, 64, 10);
+		box(4);
+	} else {
+		fill(155);
+		box(2);
+	}
+	pop();
 }
 
 function windowResized() {
