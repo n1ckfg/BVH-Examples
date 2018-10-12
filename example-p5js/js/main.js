@@ -33,7 +33,6 @@ function draw() {
 	scale(10);
   
   	background(50, 0, 50);
-	strokeWeight(1);
 
 	if (ready) {
 		skel.update();
@@ -52,7 +51,7 @@ class Skeleton {
 		this.fps = 1.0 / this.motion.frameTime;
 	  	this.frameCount = this.motion.numFrames;
 		this.lastTime = 0;
-  		this.counter = 0;
+  		this.counter = 1; // starts from 1
   		this.bones = [];
 
 		for (var i=0; i<this.motion.nodeList.length; i++) {
@@ -64,11 +63,19 @@ class Skeleton {
 	}
 
 	drawBone(bone) {
-		bone.at[this.counter];
+		bone.at(this.counter);
 		var position = createVector(bone.offsetX, bone.offsetY, bone.offsetZ);
+		var position_end = createVector(bone.endOffsetX, bone.endOffsetY, bone.endOffsetZ);
+		var rotation = createVector(bone.rotationX, bone.rotationY, bone.rotationZ);
 		
+		strokeWeight(1);
+		stroke(255);
+		line(bone.offsetX, bone.offsetY, bone.offsetZ, bone.endOffsetX, bone.endOffsetY, bone.endOffsetZ);
+
+		stroke(0);
 		push();
 		translate(position.x, position.y, position.z);
+		rotate3D(rotation);
 		if (bone.id === "Head") {
 			fill(10, 64, 255);
 			box(4);
@@ -90,24 +97,24 @@ class Skeleton {
 
 	drawBones() {
 		for (var i=0; i<this.bones.length; i++) {
-				var bone = this.bones[i];
-				this.drawBone(bone);
+			this.drawBone(this.bones[i]);
 		}
 	}
 
 	update() {
+		this.drawBones();
+
 		this.time = parseFloat(millis()) / 1000.0;
 
-		if (this.time > this.lastTime + this.fps) {
+		if (this.time > this.lastTime + this.motion.frameTime) {
 			if (this.counter < this.frameCount - 1) {
-				this.counter ++;
+				this.counter++;
 			} else {
-				this.counter = 0;
+				this.counter = 1;
 			}
+			//console.log("time: " + this.time + "   lastTime: " + this.lastTime + "   counter: " + this.counter);
 			this.lastTime = this.time;
 		}
-
-		this.drawBones();
 	}
 
 }
